@@ -43,6 +43,7 @@ namespace Entidades
             pathLectura = path + @"\Threads\Veterinaria\NuevosPacientes\";
             pathEscritura = path + @"\Threads\Veterinaria\PacientesAtendidos\";
 
+            CrearPaths();
 
             perrosEnEspera = new ConcurrentQueue<Perro>();
             SetPerrosDefault();
@@ -57,6 +58,18 @@ namespace Entidades
 
             atenderPerros = new Thread(Atender);
             atenderPerros.Start();
+        }
+
+        private static void CrearPaths()
+        {
+            if (!Directory.Exists(pathLectura))
+            {
+                Directory.CreateDirectory(pathLectura);
+            }
+            if (!Directory.Exists(pathEscritura))
+            {
+                Directory.CreateDirectory(pathEscritura);
+            }
         }
 
         public static void Atender()
