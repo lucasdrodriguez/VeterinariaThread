@@ -8,21 +8,19 @@ namespace VeterinariaUI
 {
     public partial class FrmPrincipal : Form
     {
-        Thread t1;
+        Thread doctorAtendiendo;
 
         public FrmPrincipal()
         {
             InitializeComponent();
-            t1 = new Thread(Veterinaria.Comenzar);
+            doctorAtendiendo = new Thread(Veterinaria.Comenzar);
         }
 
         private void FrmPrincipal_Load(object sender, EventArgs e)
         {
-            t1.Start();
+            doctorAtendiendo.Name = "DOCTOR ATENDIENDO";
+            doctorAtendiendo.Start();
         }
-
-
-
 
     }
 }

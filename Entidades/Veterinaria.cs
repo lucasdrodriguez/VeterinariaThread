@@ -48,15 +48,15 @@ namespace Entidades
             perrosEnEspera = new ConcurrentQueue<Perro>();
             SetPerrosDefault();
 
-
             perrosDadosDeAlta = new Stack<Perro>();
-
 
             actualizarInfo += LeerNuevosPacientes;
             actualizarInfo += GenerarBackUpAtendidos;
             actualizarInfo += EliminarAtendidos;
 
             atenderPerros = new Thread(Atender);
+
+            atenderPerros.Name = "thread atendiendo perros";
             atenderPerros.Start();
         }
 
@@ -66,6 +66,7 @@ namespace Entidades
             {
                 Directory.CreateDirectory(pathLectura);
             }
+
             if (!Directory.Exists(pathEscritura))
             {
                 Directory.CreateDirectory(pathEscritura);
@@ -78,7 +79,7 @@ namespace Entidades
             {
                 Thread.Sleep(5000);
                 Perro perroAtendido;
-
+           
                 if (perrosEnEspera.TryDequeue(out perroAtendido))
                 {
                     perrosDadosDeAlta.Push(perroAtendido);
@@ -87,22 +88,6 @@ namespace Entidades
         }
 
 
-        private static void EliminarAtendidos()
-        {
-
-            DirectoryInfo directorioElegido = new DirectoryInfo(pathLectura);
-            FileInfo[] files = directorioElegido.GetFiles();
-
-            foreach (FileInfo archivoItem in files)
-            {
-                if (archivoItem.Name.Contains("Leido_"))
-                {
-                    File.Delete(archivoItem.FullName);
-                }
-
-            }
-
-        }
 
         private static void SetPerrosDefault()
         {
@@ -138,7 +123,7 @@ namespace Entidades
                         perrosEnEspera.Enqueue((Perro)serializer.Deserialize(xmlReader));
                     }
 
-                    File.Move(string.Concat(archivoItem.FullName), string.Concat(pathLectura, "Leido_" + archivoItem.Name));
+                    File.Move(archivoItem.FullName, string.Concat(pathLectura, "Atendidos_" + archivoItem.Name));
                 }
                 catch (Exception e)
                 {
@@ -160,7 +145,7 @@ namespace Entidades
                 {
                     using (FileStream archivoFileSteam = archivoItem.OpenRead())
                     {
-                        if (archivoItem.Extension == ".xml" && archivoItem.FullName.Contains("Leido_"))
+                        if (archivoItem.Extension == ".xml" && archivoItem.FullName.Contains("Atendidos_"))
                         {
                             using (FileStream ArchivoSteamComprimido = File.Create(archivoItem.FullName + ".zip"))
                             {
@@ -182,6 +167,25 @@ namespace Entidades
                     GuardarLog("LOGSErrores.txt", e.Message.ToString());
                 }
             }
+        }
+
+
+
+        private static void EliminarAtendidos()
+        {
+
+            DirectoryInfo directorioElegido = new DirectoryInfo(pathLectura);
+            FileInfo[] files = directorioElegido.GetFiles();
+
+            foreach (FileInfo archivoItem in files)
+            {
+                if (archivoItem.Name.Contains("Atendidos_"))
+                {
+                    File.Delete(archivoItem.FullName);
+                }
+
+            }
+
         }
 
 
